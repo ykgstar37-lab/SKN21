@@ -83,6 +83,8 @@ INSERT INTO job (job_id,job_title,min_salary,max_salary) VALUES ('PR_REP','Publi
 --  DDL for Table EMP 
 --  직원 테이블
 -- ------------------------------------------------------
+use testdb;
+
 DROP TABLE IF EXISTS emp;
 CREATE TABLE emp(
     emp_id 	  INT PRIMARY KEY,
