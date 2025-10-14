@@ -15,7 +15,7 @@ name_value = st.text_input("이름")
 if name_value:
     st.write("이름: " + name_value)
 
-st.subheader("여러줄 텍스트 입력")
+st.subheader("여러줄 text 입력")
 info = st.text_area("정보", height=200)  #height: pixcel
 st.write(info.replace("\n", "<br>"), unsafe_allow_html=True)
 
@@ -53,9 +53,9 @@ else:
 
 ##### 링크 버튼. 버튼 클릭시 지정한 url로 이동한다.
 st.subheader("링크버튼")
-col1, col2, col3 = st.columns(3)
+col1, col2, col3 = st.columns(3) # 동일한 간격으로 한 줄로 표현
 col1.link_button("Streamlit", "https://streamlit.io/")
-col2.link_button("구글", "https://google.co.kr")
+col2.link_button("Google", "https://google.co.kr")
 col3.link_button("Naver", "https://www.naver.com")
 
 
@@ -64,7 +64,7 @@ st.subheader("Select Box")
 option = st.selectbox(
     "지역을 선택하세요",
     ("서울", "인천", "부산", "광주"),
-    # index=None
+    # index=None -> 지정 안하면 첫번째 값이 우선 뜸
 )
 st.write("**선택한 지역**:", option)
 
@@ -72,6 +72,8 @@ st.write("**선택한 지역**:", option)
 st.subheader("Checkbox")
 @st.cache_data
 def get_data():
+    # csv 파일을 읽어서 DataFrame(판다스의 표)로 생성 : read.csv
+    # 앞 10개의 행만 조회 : head(10)
     df = pd.read_csv("data/boston_housing.csv").head(10)
     return df
 
@@ -85,12 +87,14 @@ else:
 
 ####### file_uploader()
 st.subheader("파일 업로드 버튼")
-col4, col5 = st.columns(2)
+#col4, col5 = st.columns(2)
 
-uploaded_file = col4.file_uploader(
+uploaded_file = st.file_uploader(
     "이미지 업로드", 
-    type=["png", "jpg"],           # 업로드 파일 확장자 제한. (생략하면 모든 확장자의 파일을 다 업로드 할 수있다.)
-    accept_multiple_files=False    # True 설정 시 한번에 여러개 파일 업로드 가능.
+    type=["png", "jpg"],           
+    # 업로드 파일 확장자 제한. (생략하면 모든 확장자의 파일을 다 업로드 할 수있다.)
+    accept_multiple_files=False    
+    # True 설정 시 한번에 여러개 파일 업로드 가능.
 )
 
 ########## 업로드 된 파일 저장 ##########
@@ -104,7 +108,9 @@ if uploaded_file is not None:
     # UploadFile.getvalue(): 업로드된 파일을 bytes로 반환
     # UploadFile.name      : 업로드된 파일이름 반환.
     bytes_data = uploaded_file.getvalue()
+    # 저장할 경로
     save_filepath = os.path.join(save_dir, uploaded_file.name)
+    # 업로드된 파일 저장
     with open(save_filepath, "wb") as fw:
         fw.write(bytes_data)
     st.write(uploaded_file.name)
@@ -134,6 +140,7 @@ with open(down_filepath, "rb") as fr:
         "파일 다운로드",                             # Button Label
         data=fr.read(),                             # 다운로드 시킬 파일 content. (str or bytes)
         file_name=os.path.basename(down_filepath),  # 다운 로드 될때 파일명 (경로일 경우)
+        # os.path.basename("경로") 경로에서 마지막 경로(basename)을 반환
     )
 
 

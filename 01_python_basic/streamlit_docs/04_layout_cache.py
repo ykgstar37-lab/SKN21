@@ -49,9 +49,17 @@ col4.metric(label="일본JPY(100엔)", value="958.63 원", delta="-7.44 원")
 #  
 # Database에 저장할 수있는 객체이면 st.cache_data, 아니면 st.cache_resource
 #########################################################
+# @st.cache_data
+# def get_txt():
+#     f = open('a.txt')
+#     read f.read
+
+# def get_txt_stream():
+
 
 # DataFrame 데이터를 제공하는 함수.
 @st.cache_data
+# cache에 데이처 저장
 def get_data():
     print("get_data")
     df = pd.read_csv("data/boston_housing.csv")

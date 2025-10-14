@@ -65,11 +65,16 @@ Streamlit 실행 옵션 (Command Line Flags)
 | `streamlit cache clear` | 디스크에 저장된 모든 캐시 데이터를 제거|
 
 
+
+
 ### 설치
 `pip install stream`
 `pip install ...`
 
+# cd 경로
 cd C:\Users\Playdata\OneDrive - gc.gachon.ac.kr\바탕 화면\SKN21\01_python_basic\streamlit_docs
+
 
 streamlit run 01_write.py
           # tap 이용
+** control + c 종료
