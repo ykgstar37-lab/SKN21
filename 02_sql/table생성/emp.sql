@@ -1,3 +1,4 @@
+
 use testdb;
 DROP TABLE IF EXISTS emp;
 CREATE TABLE emp(
