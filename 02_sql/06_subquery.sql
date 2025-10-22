@@ -1,7 +1,14 @@
-use hr_join;
-
 use testdb;
 show tables;
+
+desc customer;
+
+select * from customer;
+
+
+
+
+use hr_join;
 /* **************************************************************************
 서브쿼리(Sub Query)
 - 쿼리안에서 select 쿼리를 사용하는 것.
