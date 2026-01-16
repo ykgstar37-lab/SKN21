@@ -1,6 +1,11 @@
 # polls/views.py
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse 
+# url conf의 설정 이름으로 url을 조회하는 함수
+## path("url", view함수, name='name')
+# reverse("name") => url
+
 from datetime import datetime
 from .models import Question, Choice
 
@@ -58,36 +63,91 @@ def list(request):
         {"question_list":question_list}
     )
 
-
-# 개별 설문을 할 수 있는 페이지(설문폼)로 이동
-## 질문 id를 path parameter로 받아서
-##      그 질문과 보기를 조화해서 화면에 출력 - 설문 입력 폼
+# 개별 설문을 할 수 있는 페이지(설문폼)로 이동.
+## 질문 id를 path parameter로 받아서 
+##    그 질문과 보기를 DB조회해서 화면에 출력 - 설문 입력 폼
 ### path parameter: http://ip:port/path1/path2/path3/전달값1/전달값2
-### request(요청) parameter:
+### request(요청) parameter: 
 #          http://ip:port/path1/path2/path3?name=전달값1&name=전달값2
 
 # 요청URL: /polls/vote_form/질문ID
 # view함수: vote_form
-# template: polls/vote_form.html
+# template: 정상 - polls/vote_form.html
+#            오류 - polls/error.html
 def vote_form(request, question_id):
-    # question_id 파라미터 - path parameter 값을 받을 변수
-    # view합수의 두번째 파라미터부터는 path parameter를 받을 변수들
-    ## 파라미터 변수명은 uris.py에 등록한 변수명으로 선언하면 된다
-
+    # question_id 파라미터 - path parameter 값을 받을 변수.
+    # view함수의 두번째 파라미터부터는 path parameter를 받을 변수들. 
+    ## 파라미터 변수명은 urls.py에 등록한 변수명으로 선언하면된다.
+    
     # 1. DB에서 question_id로 질문을 조회
     try:
         question = Question.objects.get(pk=question_id)
         # 응답 화면 요청
-        render(
+        return render(
             request,
             "polls/vote_form.html",
             {"question":question}
         )
 
     except:
-        # print(f"{question_id}의 질문이 없습니다")
+        # print(f"{question_id}의 질문이 없습니다.")
         return render(
             request,
             "polls/error.html",
-            {"error_message":f"{question_id}의 질문이 없습니다."}
+            {"error_message":f"요청하신 {question_id}번 질문이 없습니다."}
         )
+
+
+# 설문 처리 하기.
+## 선택한 보기(Choice)의 votes를 1 증가. 투표 결과를 보여주는 페이지로 이동.
+
+# 요청URL: polls/vote
+# view함수: vote
+# 응답:  정상 - polls/vote_result.html
+#        오류 - polls/vote_form.html
+
+# form입력 -> 요청파라미터로 읽는다.
+# 요청파라미터: GET - request.GET -> dictionary {"요청파라미터이름":"요청파라미터값"}
+#             POST - request.POST -> dictionary 
+def vote(request):
+    # 요청파라미터 조회
+    choice_id = request.POST.get('choice') # 선택된 보기의 ID
+    question_id = request.POST.get('question_id') # 질문 ID
+
+    # choice_id가 넘어왔다면 choice의 votes를 1 증가
+    if choice_id != None:
+        selected_choice = Choice.objects.get(pk=choice_id)
+        selected_choice.votes += 1
+        selected_choice.save()     # update
+
+        # TODO: 업데이트 결과를 보여주는 View(vote_result)를 redirect방식으로 요청
+        # urls.py에 path에 등록된 이름으로 url을 조회
+        ## app_name:설정이름
+        ## path parameter있는 경우 args=[path parameter값, ..]
+        url = reverse("polls:vote_result", args=[question_id])
+        print(type(url), url)
+        return redirect(url)
+
+        # # 결과페이지 - question 조회
+        # question = Question.objects.get(pk=question_id)
+        # return render(
+        #     request, "polls/vote_result.html", {"question":question}
+        # )
+    else: # choice를 선택하지 않고 요청한 경우.
+        question = Question.objects.get(pk=question_id)
+        return render(
+            request,
+            "polls/vote_form.html",
+            {"question":question, "error_message":"보기를 선택하세요."}
+        )
+    
+
+# 개별 질문의 투표 결과를 보여주는 View
+# 요청 URL: /polls/vote_result/<question_id>
+# View함수: vote_result
+# 응답: polls/vote_result.html
+def vote_result(request, question_id):
+    question = Question.objects.get(pk=question_id)
+    return render(
+        request, "polls/vote_result.html", {"question":question}
+    )

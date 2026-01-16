@@ -14,9 +14,11 @@ urlpatterns = [
     path("welcome", views.welcome, name="welcome"),
     path("list", views.list, name="list"),
     path("vote_form/<int:question_id>", views.vote_form, name="vote_form"),
+    path("vote", views.vote, name="vote"),
+    path("vote_result/<int:question_id>", views.vote_result, name="vote_result"),
 ]
 
 # polls/vote_form/<path파라미터값 타입:view의 파라미터변수명>
-# <int:              # path parameter값을 int로 전달해라
-#     : question_id> # view의 question_id 변수로 전달해라
+# <int:   #path parameter값을 int로 전달해라.
+# <   :question_id> # view의 question_id 변수로 전달해라.
 # type: int, str
